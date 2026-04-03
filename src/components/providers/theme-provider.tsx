@@ -72,12 +72,10 @@ export function ThemeProvider({
     }
   }
 
-  if (!mounted) {
-    return <>{children}</>
-  }
+  const value = { theme, setTheme }
 
   return (
-    <ThemeProviderContext.Provider value={{ theme, setTheme }}>
+    <ThemeProviderContext.Provider value={value}>
       {children}
     </ThemeProviderContext.Provider>
   )

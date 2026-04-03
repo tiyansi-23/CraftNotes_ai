@@ -4,7 +4,7 @@ import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { AskAIDialog } from "@/components/ask-ai-dialog"
 import { Button } from "@/components/ui/button"
-import { UserButton } from "@clerk/nextjs"
+import { UserButton, Show, SignInButton, SignUpButton } from "@clerk/nextjs"
 import { PanelLeft, FileText } from "lucide-react"
 
 interface HeaderProps {
@@ -39,7 +39,17 @@ export function Header({ onToggleSidebar, sidebarOpen }: HeaderProps) {
         <div className="flex items-center gap-3">
           <AskAIDialog />
           <div className="h-6 w-px bg-border/60" />
-          <UserButton />
+          <Show when="signed-in">
+            <UserButton />
+          </Show>
+          <Show when="signed-out">
+            <SignInButton mode="modal">
+              <Button variant="ghost" size="sm">Sign In</Button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <Button size="sm">Sign Up</Button>
+            </SignUpButton>
+          </Show>
           <ThemeToggle />
         </div>
       </div>

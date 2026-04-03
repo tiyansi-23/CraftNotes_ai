@@ -17,6 +17,8 @@ interface NoteContextType {
 
 const NoteContext = createContext<NoteContextType | undefined>(undefined)
 
+export { NoteContext }
+
 export function NoteProvider({ children }: { children: ReactNode }) {
   const [activeNoteId, setActiveNoteId] = useState<string | null>(null)
   const [activeNoteContent, setActiveNoteContent] = useState<string>("")

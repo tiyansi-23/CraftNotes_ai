@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { useNote } from "@/components/providers/note-provider"
+import { useState, useRef, useEffect, useContext } from "react"
+import { NoteContext } from "@/components/providers/note-provider"
 import { askAI } from "@/app/actions/ai"
 import {
   Dialog,
@@ -20,11 +20,13 @@ interface Message {
 }
 
 export function AskAIDialog() {
+  const noteContext = useContext(NoteContext)
+  const activeNoteContent = noteContext?.activeNoteContent ?? ""
+  
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [open, setOpen] = useState(false)
-  const { activeNoteContent } = useNote()
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {

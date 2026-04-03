@@ -1,4 +1,8 @@
+import { config } from "dotenv";
 import { PrismaClient } from "@prisma/client";
+import { resolve } from "path";
+
+config({ path: resolve(process.cwd(), ".env.local") });
 
 const prisma = new PrismaClient();
 
