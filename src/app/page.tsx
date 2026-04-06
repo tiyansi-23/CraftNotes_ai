@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { motion, useScroll, useTransform, useSpring } from "motion/react"
+import { SignInButton, SignUpButton, Show, SignOutButton, UserButton } from "@clerk/nextjs"
 import { 
   PenLine, 
   Sparkles, 
@@ -187,18 +188,32 @@ export default function LandingPage() {
           </Link>
           
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-[#6b6560] hover:text-[#2d2a26] transition-colors">Features</a>
-            <a href="#showcase" className="text-[#6b6560] hover:text-[#2d2a26] transition-colors">Showcase</a>
-            <Link href="/sign-in">
-              <Button variant="ghost" className="text-[#2d2a26] hover:bg-[#f0ebe5]">
-                Sign In
-              </Button>
-            </Link>
-            <Link href="/sign-up">
-              <Button className="bg-[#2d2a26] text-[#faf8f5] hover:bg-[#1a1815] rounded-full px-6">
-                Get Started
-              </Button>
-            </Link>
+            <Link href="/features" className="text-[#6b6560] hover:text-[#2d2a26] transition-colors">Features</Link>
+            <Link href="/showcase" className="text-[#6b6560] hover:text-[#2d2a26] transition-colors">Showcase</Link>
+            <Show when="signed-out">
+              <SignInButton mode="modal">
+                <Button variant="ghost" className="text-[#2d2a26] hover:bg-[#f0ebe5]">
+                  Sign In
+                </Button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <Button className="bg-[#2d2a26] text-[#faf8f5] hover:bg-[#1a1815] rounded-full px-6">
+                  Get Started
+                </Button>
+              </SignUpButton>
+            </Show>
+            <Show when="signed-in">
+              <Link href="/dashboard">
+                <Button variant="ghost" className="text-[#2d2a26] hover:bg-[#f0ebe5]">
+                  Dashboard
+                </Button>
+              </Link>
+              <SignOutButton>
+                <Button variant="outline" className="border-[#2d2a26] text-[#2d2a26] hover:bg-[#f0ebe5] rounded-full px-6">
+                  Sign Out
+                </Button>
+              </SignOutButton>
+            </Show>
           </div>
         </div>
       </motion.nav>
@@ -252,24 +267,46 @@ export default function LandingPage() {
             transition={{ duration: 0.8, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link href="/sign-up">
-              <Button 
-                size="lg" 
-                className="bg-[#2d2a26] text-[#faf8f5] hover:bg-[#1a1815] rounded-full px-8 py-6 text-lg group"
-              >
-                Start Creating
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
-            <Link href="/sign-in">
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-[#2d2a26] text-[#2d2a26] hover:bg-[#f0ebe5] rounded-full px-8 py-6 text-lg"
-              >
-                Sign In
-              </Button>
-            </Link>
+            <Show when="signed-out">
+              <SignUpButton mode="modal">
+                <Button 
+                  size="lg" 
+                  className="bg-[#2d2a26] text-[#faf8f5] hover:bg-[#1a1815] rounded-full px-8 py-6 text-lg group"
+                >
+                  Start Creating
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </SignUpButton>
+              <SignInButton mode="modal">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-[#2d2a26] text-[#2d2a26] hover:bg-[#f0ebe5] rounded-full px-8 py-6 text-lg"
+                >
+                  Sign In
+                </Button>
+              </SignInButton>
+            </Show>
+            <Show when="signed-in">
+              <Link href="/dashboard">
+                <Button 
+                  size="lg" 
+                  className="bg-[#2d2a26] text-[#faf8f5] hover:bg-[#1a1815] rounded-full px-8 py-6 text-lg group"
+                >
+                  Go to Dashboard
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+              <SignOutButton>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-[#2d2a26] text-[#2d2a26] hover:bg-[#f0ebe5] rounded-full px-8 py-6 text-lg"
+                >
+                  Sign Out
+                </Button>
+              </SignOutButton>
+            </Show>
           </motion.div>
         </div>
 
@@ -454,7 +491,7 @@ export default function LandingPage() {
               <p className="text-xl text-[#a8a29e] mb-10 max-w-xl mx-auto">
                 Join thousands of creators who trust CraftNotes for their ideas.
               </p>
-              <Link href="/sign-up">
+              <Link href="/get-started">
                 <Button 
                   size="lg" 
                   className="bg-[#faf8f5] text-[#2d2a26] hover:bg-[#e8e4df] rounded-full px-10 py-7 text-lg font-semibold group"
@@ -481,9 +518,9 @@ export default function LandingPage() {
             © 2025 CraftNotes. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <a href="#" className="text-sm text-[#6b6560] hover:text-[#2d2a26] transition-colors">Privacy</a>
-            <a href="#" className="text-sm text-[#6b6560] hover:text-[#2d2a26] transition-colors">Terms</a>
-            <a href="#" className="text-sm text-[#6b6560] hover:text-[#2d2a26] transition-colors">Contact</a>
+            <Link href="/privacy" className="text-sm text-[#6b6560] hover:text-[#2d2a26] transition-colors">Privacy</Link>
+            <Link href="/terms" className="text-sm text-[#6b6560] hover:text-[#2d2a26] transition-colors">Terms</Link>
+            <a href="mailto:hello@craftnotes.app" className="text-sm text-[#6b6560] hover:text-[#2d2a26] transition-colors">Contact</a>
           </div>
         </div>
       </footer>

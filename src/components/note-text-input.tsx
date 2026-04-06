@@ -1,9 +1,10 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
+import { motion } from "motion/react"
 import { useNote } from "@/components/providers/note-provider"
 import { updateNoteContent } from "@/app/actions/notes"
-import { PenLine, FileText } from "lucide-react"
+import { PenLine, FileText, Sparkles } from "lucide-react"
 
 const SAVE_DEBOUNCE_MS = 1000
 
@@ -73,21 +74,26 @@ export function NoteTextInput() {
 
   if (!activeNoteId) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-6 text-muted-foreground">
-        <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-muted/80 to-muted/40 shadow-lg">
-          <FileText className="h-12 w-12 text-muted-foreground/60" />
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="flex h-full flex-col items-center justify-center gap-6"
+      >
+        <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-white shadow-lg border border-[#e8e4df]">
+          <Sparkles className="h-12 w-12 text-[#d4a574]/60" />
         </div>
         <div className="text-center">
-          <p className="text-lg font-medium text-foreground">No note selected</p>
-          <p className="text-sm text-muted-foreground">Select a note from the sidebar or create a new one</p>
+          <p className="text-lg font-medium text-[#2d2a26]">No note selected</p>
+          <p className="text-sm text-[#8b8680]">Select a note from the sidebar or create a new one</p>
         </div>
-      </div>
+      </motion.div>
     )
   }
 
   return (
     <div className="relative h-full">
-      <div className="absolute left-0 top-0 flex items-center gap-2 text-muted-foreground/50">
+      <div className="absolute left-0 top-0 flex items-center gap-2 text-[#8b8680]">
         <PenLine className="h-4 w-4" />
         <span className="text-xs font-medium uppercase tracking-wider">Editor</span>
       </div>
@@ -95,7 +101,7 @@ export function NoteTextInput() {
         value={localContent}
         onChange={handleChange}
         placeholder="Start writing your thoughts..."
-        className="h-full w-full resize-none border-0 bg-transparent pt-8 text-lg leading-relaxed text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0"
+        className="h-full w-full resize-none border-0 bg-transparent pt-8 text-lg leading-relaxed text-[#2d2a26] placeholder:text-[#a8a29e] focus:outline-none focus:ring-0"
         spellCheck={false}
       />
     </div>

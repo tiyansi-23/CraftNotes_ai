@@ -1,12 +1,13 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
+import { motion, AnimatePresence } from "motion/react"
 import Fuse from "fuse.js"
 import { useNote } from "@/components/providers/note-provider"
 import { createNote, deleteNote, getNotesByUser } from "@/app/actions/notes"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Plus, Trash2, FileText, Search, Clock } from "lucide-react"
+import { Plus, Trash2, FileText, Search, Clock, Sparkles } from "lucide-react"
 import { toast } from "sonner"
 
 interface Note {
@@ -47,6 +48,7 @@ export function Sidebar({ userId, initialNotes }: SidebarProps) {
   const [notes, setNotes] = useState<Note[]>(initialNotes)
   const [searchQuery, setSearchQuery] = useState("")
   const [isCreating, setIsCreating] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
   const {
     activeNoteId,
     setActiveNoteId,
@@ -94,6 +96,7 @@ export function Sidebar({ userId, initialNotes }: SidebarProps) {
 
   const handleDeleteNote = async (e: React.MouseEvent, noteId: string) => {
     e.stopPropagation()
+    setDeletingId(noteId)
     try {
       const remainingNotes = await deleteNote(noteId, userId)
       setNotes(remainingNotes)
@@ -112,6 +115,8 @@ export function Sidebar({ userId, initialNotes }: SidebarProps) {
       toast.success("Note deleted")
     } catch (error) {
       toast.error("Failed to delete note")
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -132,35 +137,37 @@ export function Sidebar({ userId, initialNotes }: SidebarProps) {
   }, [userId])
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col bg-[#faf8f5]/50">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border/30 p-5">
+      <div className="flex items-center justify-between border-b border-[#e8e4df]/60 p-5">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-            <FileText className="h-4 w-4 text-primary" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#2d2a26]">
+            <FileText className="h-4 w-4 text-[#faf8f5]" />
           </div>
-          <h2 className="font-semibold text-foreground">My Notes</h2>
+          <h2 className="font-semibold text-[#2d2a26]">My Notes</h2>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleCreateNote}
-          disabled={isCreating}
-          className="h-8 w-8 rounded-lg hover:bg-primary/10 hover:text-primary"
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleCreateNote}
+            disabled={isCreating}
+            className="h-8 w-8 rounded-xl bg-[#d4a574]/10 hover:bg-[#d4a574]/20 text-[#d4a574]"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </motion.div>
       </div>
 
       {/* Search */}
       <div className="p-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8b8680]" />
           <Input
             placeholder="Search notes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-10 rounded-xl border-border/30 bg-muted/30 pl-10 text-sm placeholder:text-muted-foreground/70 focus-visible:ring-primary/20"
+            className="h-10 rounded-xl border-[#e8e4df]/60 bg-white/60 pl-10 text-sm placeholder:text-[#a8a29e] focus-visible:ring-[#d4a574]/30 focus-visible:border-[#d4a574]"
           />
         </div>
       </div>
@@ -168,15 +175,19 @@ export function Sidebar({ userId, initialNotes }: SidebarProps) {
       {/* Note List */}
       <div className="flex-1 overflow-y-auto px-3 pb-4">
         {filteredNotes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-4 p-8 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted/50">
-              <FileText className="h-8 w-8 text-muted-foreground/60" />
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center justify-center gap-4 p-8 text-center"
+          >
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white border border-[#e8e4df]">
+              <Sparkles className="h-8 w-8 text-[#d4a574]/60" />
             </div>
             <div>
-              <p className="text-sm font-medium text-foreground">
+              <p className="text-sm font-medium text-[#2d2a26]">
                 {searchQuery ? "No notes match" : "No notes yet"}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-xs text-[#8b8680]">
                 {searchQuery ? "Try a different search term" : "Create your first note to get started"}
               </p>
             </div>
@@ -186,51 +197,59 @@ export function Sidebar({ userId, initialNotes }: SidebarProps) {
                 size="sm"
                 onClick={handleCreateNote}
                 disabled={isCreating}
-                className="rounded-lg"
+                className="rounded-xl border-[#e8e4df] hover:bg-[#f0ebe5] hover:border-[#d4a574]"
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Create note
               </Button>
             )}
-          </div>
+          </motion.div>
         ) : (
           <div className="space-y-1">
-            {filteredNotes.map((note) => (
-              <button
-                key={note.id}
-                onClick={() => handleSelectNote(note)}
-                className={`group flex w-full flex-col rounded-xl px-4 py-3 text-left transition-all duration-200 ${
-                  activeNoteId === note.id
-                    ? "bg-primary/10 ring-1 ring-primary/20"
-                    : "hover:bg-muted/60"
-                }`}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <span className={`flex-1 truncate text-sm font-medium ${
-                    activeNoteId === note.id ? "text-primary" : "text-foreground"
-                  }`}>
-                    {note.title === "Untitled" && !note.content
-                      ? "New Note"
-                      : note.title}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={(e) => handleDeleteNote(e, note.id)}
-                    className="h-6 w-6 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
-                  >
-                    <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
-                  </Button>
-                </div>
-                <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground/80">
-                  {getNotePreview(note.content) || "No content"}
-                </p>
-                <div className="mt-2 flex items-center gap-1.5 text-[11px] text-muted-foreground/60">
-                  <Clock className="h-3 w-3" />
-                  {formatRelativeTime(note.updatedAt)}
-                </div>
-              </button>
-            ))}
+            <AnimatePresence mode="popLayout">
+              {filteredNotes.map((note, index) => (
+                <motion.button
+                  key={note.id}
+                  layout
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.2, delay: index * 0.03 }}
+                  onClick={() => handleSelectNote(note)}
+                  className={`group flex w-full flex-col rounded-xl px-4 py-3 text-left transition-all duration-200 ${
+                    activeNoteId === note.id
+                      ? "bg-white shadow-sm ring-1 ring-[#d4a574]/30"
+                      : "hover:bg-white/60"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <span className={`flex-1 truncate text-sm font-medium ${
+                      activeNoteId === note.id ? "text-[#2d2a26]" : "text-[#2d2a26]"
+                    }`}>
+                      {note.title === "Untitled" && !note.content
+                        ? "New Note"
+                        : note.title}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => handleDeleteNote(e, note.id)}
+                      disabled={deletingId === note.id}
+                      className="h-6 w-6 shrink-0 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-50 hover:text-red-500"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                  <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-[#6b6560]">
+                    {getNotePreview(note.content) || "No content"}
+                  </p>
+                  <div className="mt-2 flex items-center gap-1.5 text-[11px] text-[#8b8680]">
+                    <Clock className="h-3 w-3" />
+                    {formatRelativeTime(note.updatedAt)}
+                  </div>
+                </motion.button>
+              ))}
+            </AnimatePresence>
           </div>
         )}
       </div>
