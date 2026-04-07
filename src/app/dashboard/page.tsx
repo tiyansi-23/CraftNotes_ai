@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server"
+import { auth, clerkClient } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/prisma"
 import { Dashboard } from "@/components/dashboard"
@@ -81,14 +81,33 @@ export default async function DashboardPage() {
     )
   }
 
-  // Get user from database
-  const user = await db.user.findUnique({
+  // Get user from database or create if not exists
+  let user = await db.user.findUnique({
     where: { clerkId },
   })
 
+  // If user doesn't exist in DB, create them
   if (!user) {
-    // User not synced to DB yet, redirect to sign-up flow
-    redirect("/sign-up")
+    const client = await clerkClient()
+    const clerkUser = await client.users.getUser(clerkId)
+    const email = clerkUser.emailAddresses[0]?.emailAddress || `${clerkId}@placeholder.com`
+    
+    user = await db.user.create({
+      data: {
+        clerkId,
+        email,
+        name: clerkUser.firstName || "",
+      },
+    })
+    
+    // Create welcome note for new user
+    const welcomeNote = await db.note.create({
+      data: {
+        userId: user.id,
+        title: "Welcome to CraftNotes AI",
+        content: "# Welcome to CraftNotes AI!\n\nThis is your first note. Start typing to edit it.\n\n## Features:\n- Auto-save with debounce\n- Fuzzy search with Fuse.js\n- AI-powered assistance\n- Dark mode support\n\nClick the AI button to ask questions about your notes!",
+      },
+    })
   }
 
   // Get user's notes

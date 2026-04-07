@@ -4,7 +4,8 @@ import { useState, useEffect, useMemo } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import Fuse from "fuse.js"
 import { useNote } from "@/components/providers/note-provider"
-import { createNote, deleteNote, getNotesByUser } from "@/app/actions/notes"
+import { createNote, deleteNote, getNotesByUser, getNoteById } from "@/app/actions/notes"
+import { ExportDialog } from "@/components/export-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Plus, Trash2, FileText, Search, Clock, Sparkles } from "lucide-react"
@@ -88,10 +89,24 @@ export function Sidebar({ userId, initialNotes }: SidebarProps) {
     }
   }
 
-  const handleSelectNote = (note: Note) => {
-    setActiveNoteId(note.id)
-    setActiveNoteContent(note.content)
-    setActiveNoteTitle(note.title)
+  const [isLoading, setIsLoading] = useState<string | null>(null)
+
+  const handleSelectNote = async (note: Note) => {
+    setIsLoading(note.id)
+    try {
+      // Fetch fresh note data from database
+      const freshNote = await getNoteById(note.id)
+      if (freshNote) {
+        setActiveNoteId(freshNote.id)
+        setActiveNoteContent(freshNote.content)
+        setActiveNoteTitle(freshNote.title)
+      }
+    } catch (error) {
+      console.error("Failed to load note:", error)
+      toast.error("Failed to load note")
+    } finally {
+      setIsLoading(null)
+    }
   }
 
   const handleDeleteNote = async (e: React.MouseEvent, noteId: string) => {
@@ -208,7 +223,7 @@ export function Sidebar({ userId, initialNotes }: SidebarProps) {
           <div className="space-y-1">
             <AnimatePresence mode="popLayout">
               {filteredNotes.map((note, index) => (
-                <motion.button
+                <motion.div
                   key={note.id}
                   layout
                   initial={{ opacity: 0, y: 10 }}
@@ -216,11 +231,11 @@ export function Sidebar({ userId, initialNotes }: SidebarProps) {
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.2, delay: index * 0.03 }}
                   onClick={() => handleSelectNote(note)}
-                  className={`group flex w-full flex-col rounded-xl px-4 py-3 text-left transition-all duration-200 ${
+                  className={`group flex w-full flex-col rounded-xl px-4 py-3 cursor-pointer transition-all duration-200 ${
                     activeNoteId === note.id
                       ? "bg-white shadow-sm ring-1 ring-[#d4a574]/30"
                       : "hover:bg-white/60"
-                  }`}
+                  } ${isLoading === note.id ? "opacity-70" : ""}`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <span className={`flex-1 truncate text-sm font-medium ${
@@ -247,11 +262,16 @@ export function Sidebar({ userId, initialNotes }: SidebarProps) {
                     <Clock className="h-3 w-3" />
                     {formatRelativeTime(note.updatedAt)}
                   </div>
-                </motion.button>
+                </motion.div>
               ))}
             </AnimatePresence>
           </div>
         )}
+      </div>
+
+      {/* Footer with Export */}
+      <div className="border-t border-[#e8e4df]/60 p-4">
+        <ExportDialog userId={userId} />
       </div>
     </div>
   )

@@ -97,6 +97,7 @@ export default function SignInPage() {
             <div className="absolute inset-0 bg-gradient-to-br from-[#e6d5c3]/20 to-[#d4e4d4]/20 rounded-2xl blur-xl" />
             <div className="relative bg-white/70 backdrop-blur-sm rounded-2xl border border-[#e8e4df] p-1 shadow-xl">
               <SignIn 
+                forceRedirectUrl="/dashboard"
                 appearance={{
                   elements: {
                     rootBox: "w-full",

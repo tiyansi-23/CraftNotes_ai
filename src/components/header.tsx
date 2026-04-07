@@ -44,6 +44,11 @@ export function Header({ onToggleSidebar, sidebarOpen }: HeaderProps) {
           <AskAIDialog />
           <div className="h-6 w-px bg-[#e8e4df]" />
           <Show when="signed-in">
+            <Link href="/dashboard">
+              <Button variant="ghost" size="sm" className="text-[#6b6560] hover:text-[#2d2a26] hover:bg-[#f0ebe5]">
+                My Notes
+              </Button>
+            </Link>
             <UserButton 
               appearance={{
                 elements: {

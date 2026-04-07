@@ -97,6 +97,7 @@ export default function SignUpPage() {
             <div className="absolute inset-0 bg-gradient-to-br from-[#d4e4d4]/20 to-[#f0d4d4]/20 rounded-2xl blur-xl" />
             <div className="relative bg-white/70 backdrop-blur-sm rounded-2xl border border-[#e8e4df] p-1 shadow-xl">
               <SignUp 
+                forceRedirectUrl="/dashboard"
                 appearance={{
                   elements: {
                     rootBox: "w-full",

@@ -402,15 +402,28 @@ export default function ShowcasePage() {
                 Join thousands of creators who trust CraftNotes for their thoughts.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <SignUpButton mode="modal">
-                  <Button 
-                    size="lg" 
-                    className="bg-[#faf8f5] text-[#2d2a26] hover:bg-[#e8e4df] rounded-full px-8 py-6 text-lg font-semibold group"
-                  >
-                    Get Started Free
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </SignUpButton>
+                <Show when="signed-out">
+                  <SignUpButton mode="modal">
+                    <Button 
+                      size="lg" 
+                      className="bg-[#faf8f5] text-[#2d2a26] hover:bg-[#e8e4df] rounded-full px-8 py-6 text-lg font-semibold group"
+                    >
+                      Get Started Free
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </SignUpButton>
+                </Show>
+                <Show when="signed-in">
+                  <Link href="/dashboard">
+                    <Button 
+                      size="lg" 
+                      className="bg-[#faf8f5] text-[#2d2a26] hover:bg-[#e8e4df] rounded-full px-8 py-6 text-lg font-semibold group"
+                    >
+                      Go to Dashboard
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                </Show>
                 <Link href="/features">
                   <Button 
                     size="lg" 

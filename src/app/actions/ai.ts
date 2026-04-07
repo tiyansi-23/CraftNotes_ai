@@ -1,9 +1,11 @@
 "use server";
 
-import { openai } from "@/lib/openai";
+import { getOpenAIClient } from "@/lib/openai";
 
 export async function askAI(userMessage: string, noteContent: string) {
   try {
+    const openai = getOpenAIClient();
+    
     const systemPrompt = `You are a helpful note-taking assistant. You have access to the user's current note content to provide context-aware responses.
 
 Current note content:
@@ -17,7 +19,7 @@ Instructions:
 - If asked to summarize, provide a clear HTML-formatted summary`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: process.env.AI_MODEL || "nvidia/nemotron-3-super-120b-a12b",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userMessage },

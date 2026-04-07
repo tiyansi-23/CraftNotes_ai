@@ -23,6 +23,18 @@ export function NoteTextInput() {
 
   // Sync local content when active note changes
   useEffect(() => {
+    // Save any pending changes before switching
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current)
+      saveTimeoutRef.current = null
+      // Trigger immediate save if there's unsaved content
+      const pendingContent = localContent
+      const currentNoteId = activeNoteId
+      if (currentNoteId && pendingContent !== lastSavedContentRef.current) {
+        performSave(pendingContent, currentNoteId)
+      }
+    }
+    
     setLocalContent(activeNoteContent)
     lastSavedContentRef.current = activeNoteContent
   }, [activeNoteId, activeNoteContent])
@@ -37,14 +49,14 @@ export function NoteTextInput() {
   }, [])
 
   const performSave = useCallback(
-    async (content: string) => {
-      if (!activeNoteId || content === lastSavedContentRef.current) {
+    async (content: string, noteId: string) => {
+      if (!noteId || content === lastSavedContentRef.current) {
         return
       }
 
       setIsSaving(true)
       try {
-        await updateNoteContent(activeNoteId, content)
+        await updateNoteContent(noteId, content)
         lastSavedContentRef.current = content
         setLastSavedAt(new Date())
       } catch (error) {
@@ -53,7 +65,7 @@ export function NoteTextInput() {
         setIsSaving(false)
       }
     },
-    [activeNoteId, setIsSaving, setLastSavedAt]
+    [setIsSaving, setLastSavedAt]
   )
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -66,9 +78,14 @@ export function NoteTextInput() {
       clearTimeout(saveTimeoutRef.current)
     }
 
+    // Capture current note ID to ensure we save to the correct note
+    const currentNoteId = activeNoteId
+
     // Set new timeout for debounced save
     saveTimeoutRef.current = setTimeout(() => {
-      performSave(newContent)
+      if (currentNoteId) {
+        performSave(newContent, currentNoteId)
+      }
     }, SAVE_DEBOUNCE_MS)
   }
 

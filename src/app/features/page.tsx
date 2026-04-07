@@ -173,15 +173,28 @@ export default function FeaturesPage() {
               the perfect place for your ideas.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <SignUpButton mode="modal">
-                <Button 
-                  size="lg" 
-                  className="bg-[#2d2a26] text-[#faf8f5] hover:bg-[#1a1815] rounded-full px-8 py-6 text-lg group"
-                >
-                  Start Creating Free
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </SignUpButton>
+              <Show when="signed-out">
+                <SignUpButton mode="modal">
+                  <Button 
+                    size="lg" 
+                    className="bg-[#2d2a26] text-[#faf8f5] hover:bg-[#1a1815] rounded-full px-8 py-6 text-lg group"
+                  >
+                    Start Creating Free
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </SignUpButton>
+              </Show>
+              <Show when="signed-in">
+                <Link href="/dashboard">
+                  <Button 
+                    size="lg" 
+                    className="bg-[#2d2a26] text-[#faf8f5] hover:bg-[#1a1815] rounded-full px-8 py-6 text-lg group"
+                  >
+                    Go to Dashboard
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+              </Show>
               <Link href="/showcase">
                 <Button 
                   size="lg" 
@@ -346,15 +359,28 @@ export default function FeaturesPage() {
                 Join thousands of creators who trust CraftNotes for their ideas.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <SignUpButton mode="modal">
-                  <Button 
-                    size="lg" 
-                    className="bg-[#faf8f5] text-[#2d2a26] hover:bg-[#e8e4df] rounded-full px-8 py-6 text-lg font-semibold group"
-                  >
-                    Get Started Free
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </SignUpButton>
+                <Show when="signed-out">
+                  <SignUpButton mode="modal">
+                    <Button 
+                      size="lg" 
+                      className="bg-[#faf8f5] text-[#2d2a26] hover:bg-[#e8e4df] rounded-full px-8 py-6 text-lg font-semibold group"
+                    >
+                      Get Started Free
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </SignUpButton>
+                </Show>
+                <Show when="signed-in">
+                  <Link href="/dashboard">
+                    <Button 
+                      size="lg" 
+                      className="bg-[#faf8f5] text-[#2d2a26] hover:bg-[#e8e4df] rounded-full px-8 py-6 text-lg font-semibold group"
+                    >
+                      Go to Dashboard
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                </Show>
                 <Link href="/showcase">
                   <Button 
                     size="lg" 

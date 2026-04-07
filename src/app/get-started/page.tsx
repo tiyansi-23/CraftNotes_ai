@@ -182,15 +182,28 @@ export default function GetStartedPage() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="flex flex-col sm:flex-row items-center justify-center gap-4"
             >
-              <SignUpButton mode="modal">
-                <Button 
-                  size="lg" 
-                  className="bg-[#2d2a26] text-[#faf8f5] hover:bg-[#1a1815] rounded-full px-10 py-7 text-lg font-semibold group"
-                >
-                  Create Free Account
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </SignUpButton>
+              <Show when="signed-out">
+                <SignUpButton mode="modal">
+                  <Button 
+                    size="lg" 
+                    className="bg-[#2d2a26] text-[#faf8f5] hover:bg-[#1a1815] rounded-full px-10 py-7 text-lg font-semibold group"
+                  >
+                    Create Free Account
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </SignUpButton>
+              </Show>
+              <Show when="signed-in">
+                <Link href="/dashboard">
+                  <Button 
+                    size="lg" 
+                    className="bg-[#2d2a26] text-[#faf8f5] hover:bg-[#1a1815] rounded-full px-10 py-7 text-lg font-semibold group"
+                  >
+                    Go to Dashboard
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+              </Show>
               <Link href="/showcase">
                 <Button 
                   size="lg" 

@@ -2,8 +2,6 @@ import { auth } from "@clerk/nextjs/server"
 import { db } from "@/lib/prisma"
 import { createNote } from "@/app/actions/notes"
 
-export const runtime = "edge"
-
 export async function GET() {
   try {
     const { userId: clerkId } = await auth()
